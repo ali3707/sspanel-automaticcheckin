@@ -35,6 +35,10 @@ sspanel自动签到脚本(腾讯云函数)
 # 云函数运行截图
 ![wRbQAJ.png](https://s1.ax1x.com/2020/09/17/wRbQAJ.png)
 
+# 云函数报错解决
+- {"errorCode":-1,"errorMessage":"Invoking task timed out after 3 seconds"} -- 函数运行超时，按下图设置：
+  - ![0gIMm6.png](https://s1.ax1x.com/2020/10/11/0gIMm6.png)
+  
 # 更新
 - 20200915-第一个版本，支持签到、Server酱微信推送
 - 20200917-修复非editXY主题运行时报错问题，增加酷推QQ推送
