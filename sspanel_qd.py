@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 """
-@Time ： 2020/9/17 9:52
+@Time ： 2020/9/15 9:52
 @Auth ： Ne-21
 @Des : sspanel自动每日签到脚本
 @File ：sspanel_qd.py
@@ -15,42 +16,46 @@ requests.packages.urllib3.disable_warnings()
 class SspanelQd(object):
     def __init__(self):
         # 机场地址
-        self.base_url = 'https://*****.net'
+        self.base_url = 'https://***.com'
         # 登录信息
-        self.email = '*********@qq.com'
-        self.password = '****'
-        # Server酱推送（可空）
+        self.email = '*****@qq.com'
+        self.password = '*****'
+        # Server酱推送
         self.sckey = ''
-        # 酷推qq推送（可空）
+        # 酷推qq推送
         self.ktkey = ''
+        # ServerTurbo推送
+        self.SendKey = ''
 
     def checkin(self):
         email = self.email.split('@')
         email = email[0] + '%40' + email[1]
         password = self.password
+        try:
+            session = requests.session()
+            session.get(self.base_url, verify=False)
 
-        session = requests.session()
+            login_url = self.base_url + '/auth/login'
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
 
-        session.get(self.base_url, verify=False)
+            post_data = 'email=' + email + '&passwd=' + password + '&code='
+            post_data = post_data.encode()
+            session.post(login_url, post_data, headers=headers, verify=False)
 
-        login_url = self.base_url + '/auth/login'
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        }
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                'Referer': self.base_url + '/user'
+            }
 
-        post_data = 'email=' + email + '&passwd=' + password + '&code='
-        post_data = post_data.encode()
-        response = session.post(login_url, post_data, headers=headers, verify=False)
-
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            'Referer': self.base_url + '/user'
-        }
-
-        response = session.post(self.base_url + '/user/checkin', headers=headers, verify=False)
-        msg = (response.json()).get('msg')
-        print(msg)
+            response = session.post(self.base_url + '/user/checkin', headers=headers, verify=False)
+            # print(response.text)
+            msg = (response.json()).get('msg')
+            print(msg)
+        except:
+            return False
 
         info_url = self.base_url + '/user'
         response = session.get(info_url, verify=False)
@@ -68,13 +73,13 @@ class SspanelQd(object):
             return msg
 
 
-    # Server酱推送
-    def server_send(self, msg):
-        if self.sckey == '':
+    # ServerTurbo推送
+    def serverTurbo_send(self, msg):
+        if self.SendKey == '':
             return
-        server_url = "https://sc.ftqq.com/" + str(self.sckey) + ".send"
+        server_url = "https://sctapi.ftqq.com/" + str(self.SendKey) + ".send"
         data = {
-                'text': "签到完成，点击查看详细信息~",
+                'text': "今日的流量白嫖到啦！",
                 'desp': msg
             }
         requests.post(server_url, data=data)
@@ -87,11 +92,26 @@ class SspanelQd(object):
         data = ('签到完成，点击查看详细信息~\n'+str(msg)).encode("utf-8")
         requests.post(kt_url, data=data)
 
+    # Server酱推送
+    def server_send(self, msg):
+        if self.sckey == '':
+            return
+        server_url = "https://sc.ftqq.com/" + str(self.sckey) + ".send"
+        data = {
+            'text': "签到完成，点击查看详细信息~",
+            'desp': msg
+        }
+        requests.post(server_url, data=data)
+
 
     def main(self):
         msg = self.checkin()
-        self.server_send(msg)
-        self.kt_send(msg)
+        if msg == False:
+            print("网址不正确或网站禁止访问。")
+        else:
+            self.server_send(msg)
+            self.kt_send(msg)
+            self.serverTurbo_send(msg)
 
 # 云函数入口
 def main_handler(event, context):
