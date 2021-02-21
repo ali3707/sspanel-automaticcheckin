@@ -16,16 +16,18 @@ requests.packages.urllib3.disable_warnings()
 class SspanelQd(object):
     def __init__(self):
         # 机场地址
-        self.base_url = 'https://***.com'
+        self.base_url = 'https://*****link'
         # 登录信息
-        self.email = '*****@qq.com'
-        self.password = '*****'
+        self.email = '******@qq.com'
+        self.password = '******'
         # Server酱推送
         self.sckey = ''
         # 酷推qq推送
         self.ktkey = ''
         # ServerTurbo推送
         self.SendKey = ''
+        # Qmsg私聊推送
+        self.QmsgKey = ''
 
     def checkin(self):
         email = self.email.split('@')
@@ -72,9 +74,18 @@ class SspanelQd(object):
         except:
             return msg
 
+    #Qmsg私聊推送
+    def Qmsg_send(self, msg):
+        if self.QmsgKey == '':
+            return
+        qmsg_url = 'https://qmsg.zendee.cn/send/' + str(self.QmsgKey)
+        data = {
+            'msg': msg,
+        }
+        requests.post(qmsg_url, data=data)
 
-    # ServerTurbo推送
-    def serverTurbo_send(self, msg):
+    # Server酱推送
+    def server_send(self, msg):
         if self.SendKey == '':
             return
         server_url = "https://sctapi.ftqq.com/" + str(self.SendKey) + ".send"
@@ -93,7 +104,7 @@ class SspanelQd(object):
         requests.post(kt_url, data=data)
 
     # Server酱推送
-    def server_send(self, msg):
+    def serverTurbo_send(self, msg):
         if self.sckey == '':
             return
         server_url = "https://sc.ftqq.com/" + str(self.sckey) + ".send"
@@ -112,6 +123,7 @@ class SspanelQd(object):
             self.server_send(msg)
             self.kt_send(msg)
             self.serverTurbo_send(msg)
+            self.Qmsg_send(msg)
 
 # 云函数入口
 def main_handler(event, context):
