@@ -41,7 +41,7 @@
 | 名字 | 地址 |
 |  ----  | ----  |
 | 跑路云 | 国内域名 paoluz.pw  跑路云.co |
-| 魔戒 | 魔戒.com mojie.me |
+| 魔戒 | 魔戒.com mojie.me （此机场按量付费，没有签到活动）|
 
 # Clash
 - Clash For Android   [点击下载](https://ghproxy.com/https://github.com/Kr328/ClashForAndroid/releases/download/v2.1.5/app-universal-release.apk)
